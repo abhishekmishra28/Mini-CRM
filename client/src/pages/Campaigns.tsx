@@ -136,10 +136,29 @@ export function Campaigns() {
   const [channel, setChannel] = useState<CampaignChannel>('whatsapp');
   const [message, setMessage] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState('');
   const [sending, setSending] = useState<string | null>(null);
   const [selected, setSelected] = useState<Campaign | null>(null);
 
   const selectedSegment = segments.find((s) => s.id === segmentId);
+
+  async function handleAiGenerateCampaign() {
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    try {
+      const result = await aiApi.generateCampaign(aiPrompt, segments.map(s => ({ id: s.id, name: s.name })));
+      setName(result.name);
+      setSegmentId(result.segmentId);
+      if (['whatsapp', 'sms', 'email', 'rcs'].includes(result.channel)) {
+        setChannel(result.channel as CampaignChannel);
+      }
+      setMessage(result.message);
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   async function handleGenerateMessage() {
     if (!segmentId) return;
@@ -181,6 +200,7 @@ export function Campaigns() {
     setName('');
     setSegmentId('');
     setMessage('');
+    setAiPrompt('');
     setShowCreate(false);
   }
 
@@ -207,6 +227,33 @@ export function Campaigns() {
             <Megaphone size={16} className="text-violet-400" />
             Create Campaign
           </h2>
+
+          {/* AI Builder */}
+          <div className="bg-violet-600/10 border border-violet-600/30 rounded-lg p-4 space-y-3 mb-2">
+            <div className="flex items-center gap-2 text-violet-300 text-sm font-medium">
+              <Sparkles size={14} />
+              AI Campaign Builder
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAiGenerateCampaign()}
+                placeholder="e.g. Create a WhatsApp summer sale campaign for high spenders offering 20% off"
+                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500"
+              />
+              <button
+                onClick={handleAiGenerateCampaign}
+                disabled={aiLoading || !aiPrompt.trim()}
+                className="flex items-center gap-2 px-3 py-2 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm rounded-lg transition-colors"
+              >
+                {aiLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                Generate
+              </button>
+            </div>
+            <p className="text-xs text-violet-400/60">Describe your campaign in plain English — AI will select the segment and draft the message</p>
+          </div>
 
           {/* Name */}
           <div>

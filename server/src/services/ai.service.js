@@ -85,6 +85,22 @@ function getFallbackMessage() {
   return "🛍️ Exclusive offer just for you! Shop now and get 20% off your next order. Use code XENO20 at checkout. Valid for 48 hours only!";
 }
 
+function getFallbackCampaign(prompt, segments) {
+  const defaultSegment = segments.length > 0 ? segments[0].id : "";
+  const lower = prompt.toLowerCase();
+  let channel = "whatsapp";
+  if (lower.includes("sms")) channel = "sms";
+  else if (lower.includes("email")) channel = "email";
+  else if (lower.includes("rcs")) channel = "rcs";
+
+  return {
+    name: "AI Generated Campaign",
+    segmentId: defaultSegment,
+    channel,
+    message: getFallbackMessage()
+  };
+}
+
 // ─── AI Functions ─────────────────────────────────────────────────────────────
 
 async function chat(prompt, context = {}) {
@@ -191,6 +207,40 @@ Rules:
   }
 }
 
+async function generateCampaign(prompt, segments) {
+  if (!getClient()) return JSON.stringify(getFallbackCampaign(prompt, segments));
+
+  const segmentsList = segments.map(s => `- ID: ${s.id}, Name: ${s.name}`).join("\n");
+
+  const systemMessage = `You are a marketing AI. Create a campaign based on the user's prompt.
+Choose the most appropriate segment from the provided list, pick the best channel (whatsapp, sms, email, rcs), and write the message (max 160 chars).
+Return ONLY valid JSON with no markdown formatting.
+
+Available Segments:
+${segmentsList}
+
+Output format:
+{
+  "name": "Creative Campaign Name",
+  "segmentId": "selected segment ID from the list",
+  "channel": "whatsapp|sms|email|rcs",
+  "message": "The message content"
+}`;
+
+  try {
+    const text = await callWithFallback([
+      { role: "system", content: systemMessage },
+      { role: "user", content: prompt },
+    ]);
+
+    if (!text) return JSON.stringify(getFallbackCampaign(prompt, segments));
+    return text.replace(/```json/g, "").replace(/```/g, "").trim();
+  } catch (err) {
+    console.error("OpenRouter generateCampaign error:", err.message);
+    return JSON.stringify(getFallbackCampaign(prompt, segments));
+  }
+}
+
 async function getInsights() {
   if (!getClient())
     return "AI insights require an OpenRouter API key. Set OPENAI_API_KEY in server/.env.";
@@ -226,4 +276,4 @@ ${JSON.stringify(campaigns)}`;
   }
 }
 
-module.exports = { chat, generateSegment, generateMessage, getInsights };
+module.exports = { chat, generateSegment, generateMessage, generateCampaign, getInsights };

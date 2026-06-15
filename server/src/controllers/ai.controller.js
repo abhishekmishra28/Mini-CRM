@@ -25,6 +25,18 @@ const generateMessage = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, { response: data }, "Message generated successfully"));
 });
 
+const generateCampaign = asyncHandler(async (req, res) => {
+  let rawData = await aiService.generateCampaign(req.body.prompt, req.body.segments || []);
+  let parsedData;
+  try {
+    const jsonStr = rawData.replace(/```json/g, "").replace(/```/g, "").trim();
+    parsedData = JSON.parse(jsonStr);
+  } catch (err) {
+    throw new Error("Failed to parse AI generated campaign as JSON");
+  }
+  res.json(new ApiResponse(200, parsedData, "Campaign generated successfully"));
+});
+
 const insights = asyncHandler(async (req, res) => {
   const data = await aiService.getInsights();
   res.json(new ApiResponse(200, { response: data }, "Insights generated successfully"));
@@ -34,5 +46,6 @@ module.exports = {
   chat,
   generateSegment,
   generateMessage,
+  generateCampaign,
   insights
 };

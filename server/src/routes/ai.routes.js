@@ -25,6 +25,11 @@ router.post(
 );
 
 router.post(
+ "/generate-campaign",
+ controller.generateCampaign
+);
+
+router.post(
  "/insights",
  controller.insights
 );
