@@ -1,47 +1,12 @@
-const analyticsService =
+const analyticsService = require("../services/analytics.service");
+const asyncHandler = require("../utils/asyncHandler");
+const ApiResponse = require("../utils/apiResponse");
 
-require(
-
- "../services/analytics.service"
-
-);
-
-async function getAnalytics(
-
- req,
-
- res
-
-){
-
- try{
-
-  const data =
-
-  await analyticsService
-
-  .getDashboardAnalytics();
-
-  res.json(data);
-
- }
-
- catch(error){
-
-  res.status(500)
-
-  .json({
-
-   message:error.message
-
-  });
-
- }
-
-}
+const getAnalytics = asyncHandler(async (req, res) => {
+  const data = await analyticsService.getDashboardAnalytics();
+  res.json(new ApiResponse(200, data, "Analytics retrieved successfully"));
+});
 
 module.exports = {
-
- getAnalytics
-
+  getAnalytics
 };

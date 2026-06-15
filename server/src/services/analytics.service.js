@@ -169,9 +169,29 @@ async function getDashboardAnalytics() {
 
             campaign.channel,
 
+          status:
+
+            campaign.status,
+
           total_sent:
 
             campaign.total_sent,
+
+          delivered:
+
+            campaign.delivered,
+
+          opened:
+
+            campaign.opened,
+
+          clicked:
+
+            campaign.clicked,
+
+          failed:
+
+            campaign.failed,
 
           delivery_rate:
 

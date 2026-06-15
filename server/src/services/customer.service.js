@@ -1,4 +1,5 @@
 const Customer = require("../models/Customer");
+const Order = require("../models/Order");
 
 async function getAllCustomers() {
 
@@ -56,6 +57,10 @@ async function deleteCustomer(
 
 }
 
+async function getCustomerOrders(id) {
+  return Order.find({ customer_id: id }).sort({ created_at: -1 });
+}
+
 module.exports = {
 
   getAllCustomers,
@@ -66,6 +71,8 @@ module.exports = {
 
   updateCustomer,
 
-  deleteCustomer
+  deleteCustomer,
+
+  getCustomerOrders
 
 };

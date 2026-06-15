@@ -1,124 +1,36 @@
-const campaignService =
-require(
- "../services/campaign.service"
-);
+const campaignService = require("../services/campaign.service");
+const asyncHandler = require("../utils/asyncHandler");
+const ApiResponse = require("../utils/apiResponse");
 
-async function getCampaigns(
- req,
- res
-){
+const getCampaigns = asyncHandler(async (req, res) => {
+  const data = await campaignService.getAllCampaigns();
+  res.json(new ApiResponse(200, data, "Campaigns retrieved successfully"));
+});
 
- try{
+const createCampaign = asyncHandler(async (req, res) => {
+  const data = await campaignService.createCampaign(req.body);
+  res.status(201).json(new ApiResponse(201, data, "Campaign created successfully"));
+});
 
-  const data =
-  await campaignService
-  .getAllCampaigns();
+const sendCampaign = asyncHandler(async (req, res) => {
+  const data = await campaignService.sendCampaign(req.params.id);
+  res.json(new ApiResponse(200, data, "Campaign delivery started"));
+});
 
-  res.json(data);
+const deleteCampaign = asyncHandler(async (req, res) => {
+  await campaignService.deleteCampaign(req.params.id);
+  res.json(new ApiResponse(200, null, "Campaign deleted successfully"));
+});
 
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function createCampaign(
- req,
- res
-){
-
- try{
-
-  const data =
-  await campaignService
-  .createCampaign(
-   req.body
-  );
-
-  res.status(201)
-  .json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function sendCampaign(
- req,
- res
-){
-
- try{
-
-  const data =
-  await campaignService
-  .sendCampaign(
-   req.params.id
-  );
-
-  res.json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function deleteCampaign(
- req,
- res
-){
-
- try{
-
-  await campaignService
-  .deleteCampaign(
-   req.params.id
-  );
-
-  res.json({
-   message:"Deleted"
-  });
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
+const getCampaignCommunications = asyncHandler(async (req, res) => {
+  const data = await campaignService.getCampaignCommunications(req.params.id);
+  res.json(new ApiResponse(200, data, "Campaign communications retrieved successfully"));
+});
 
 module.exports = {
-
- getCampaigns,
-
- createCampaign,
-
- sendCampaign,
-
- deleteCampaign
-
+  getCampaigns,
+  createCampaign,
+  sendCampaign,
+  deleteCampaign,
+  getCampaignCommunications
 };

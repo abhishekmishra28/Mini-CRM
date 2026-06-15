@@ -29,4 +29,9 @@ router.delete(
  controller.deleteCampaign
 );
 
+router.get(
+ "/:id/communications",
+ controller.getCampaignCommunications
+);
+
 module.exports = router;

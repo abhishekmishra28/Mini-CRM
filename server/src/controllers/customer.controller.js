@@ -1,162 +1,42 @@
-const customerService =
+const customerService = require("../services/customer.service");
+const asyncHandler = require("../utils/asyncHandler");
+const ApiResponse = require("../utils/apiResponse");
 
-require(
- "../services/customer.service"
-);
+const getCustomers = asyncHandler(async (req, res) => {
+  const data = await customerService.getAllCustomers();
+  res.json(new ApiResponse(200, data, "Customers retrieved successfully"));
+});
 
-async function getCustomers(
- req,
- res
-){
+const getCustomer = asyncHandler(async (req, res) => {
+  const data = await customerService.getCustomerById(req.params.id);
+  res.json(new ApiResponse(200, data, "Customer retrieved successfully"));
+});
 
- try{
+const createCustomer = asyncHandler(async (req, res) => {
+  const data = await customerService.createCustomer(req.body);
+  res.status(201).json(new ApiResponse(201, data, "Customer created successfully"));
+});
 
-  const data =
+const updateCustomer = asyncHandler(async (req, res) => {
+  const data = await customerService.updateCustomer(req.params.id, req.body);
+  res.json(new ApiResponse(200, data, "Customer updated successfully"));
+});
 
-  await customerService
-  .getAllCustomers();
+const deleteCustomer = asyncHandler(async (req, res) => {
+  await customerService.deleteCustomer(req.params.id);
+  res.json(new ApiResponse(200, null, "Customer deleted successfully"));
+});
 
-  res.json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function getCustomer(
- req,
- res
-){
-
- try{
-
-  const data =
-
-  await customerService
-  .getCustomerById(
-   req.params.id
-  );
-
-  res.json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function createCustomer(
- req,
- res
-){
-
- try{
-
-  const data =
-
-  await customerService
-  .createCustomer(
-   req.body
-  );
-
-  res.status(201)
-  .json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function updateCustomer(
- req,
- res
-){
-
- try{
-
-  const data =
-
-  await customerService
-  .updateCustomer(
-
-   req.params.id,
-
-   req.body
-
-  );
-
-  res.json(data);
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
-
-async function deleteCustomer(
- req,
- res
-){
-
- try{
-
-  await customerService
-  .deleteCustomer(
-   req.params.id
-  );
-
-  res.json({
-   message:"Deleted"
-  });
-
- }
- catch(error){
-
-  res.status(500)
-  .json({
-   message:error.message
-  });
-
- }
-
-}
+const getCustomerOrders = asyncHandler(async (req, res) => {
+  const data = await customerService.getCustomerOrders(req.params.id);
+  res.json(new ApiResponse(200, data, "Customer orders retrieved successfully"));
+});
 
 module.exports = {
-
- getCustomers,
-
- getCustomer,
-
- createCustomer,
-
- updateCustomer,
-
- deleteCustomer
-
+  getCustomers,
+  getCustomer,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  getCustomerOrders
 };

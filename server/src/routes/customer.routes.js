@@ -34,4 +34,9 @@ router.delete(
  controller.deleteCustomer
 );
 
+router.get(
+ "/:id/orders",
+ controller.getCustomerOrders
+);
+
 module.exports = router;

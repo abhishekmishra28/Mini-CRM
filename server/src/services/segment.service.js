@@ -170,6 +170,11 @@ async function deleteSegment(
 
 }
 
+async function previewSegment(segment) {
+  const customers = await Customer.find();
+  return customers.filter(customer => evaluateSegment(customer, segment));
+}
+
 module.exports = {
 
   createSegment,
@@ -182,6 +187,8 @@ module.exports = {
 
   evaluateCondition,
 
-  evaluateSegment
+  evaluateSegment,
+
+  previewSegment
 
 };

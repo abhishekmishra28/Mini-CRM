@@ -15,11 +15,13 @@ require(
 );
 
 router.get(
-
  "/",
-
  controller.getAnalytics
+);
 
+router.get(
+ "/dashboard",
+ controller.getAnalytics
 );
 
 module.exports = router;

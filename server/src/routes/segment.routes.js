@@ -19,6 +19,11 @@ router.post(
  controller.createSegment
 );
 
+router.post(
+ "/preview",
+ controller.previewSegment
+);
+
 router.delete(
  "/:id",
  controller.deleteSegment
